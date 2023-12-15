@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>homepage</title>
+
+  </head>
+  <body>
+    <form>
+        Movie name: 
+        <input type="text" id="sname">
+        <button id="search", type = "button">Search</button>
+    </form>
+    <div id = "testlabel"></div>
+    <script>
+        var btn = document.getElementById("search");
+        // change the textbox
+        // searching
+        searchURL = "http://127.0.0.1:5000/findrelated?"
+        var btn = document.getElementById("search")
+        btn.onclick = function(){
+            var inputbox = document.getElementById("sname");
+            var value = inputbox.value
+            var url = searchURL + "name" + "=" + value
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("readystatechange",function () {
+                if (this.readyState === 4) {
+                    responseData = JSON.parse(this.response);
+                    var common_stars = responseData.stars
+                    var common_directors = responseData.directors
+                    var common_writers = responseData.writers
+                    if (common_stars.length + common_directors.length + common_writers.length == 0){
+                        var innerhtml = "No data"
+                    }
+                    else{
+                        var innerhtml = "<table>\
+                                            <tr>\
+                                            <th>Name</th>\
+                                            <th>Release year</th>\
+                                            <th>Duration</th>\
+                                            <th>Rating</th>\
+                                            <th>Rating count</th>\
+                                            <th>Genres</th>\
+                                            <th>Introduction</th>\
+                                            </tr>\
+                                            "
+                        if (common_stars.length > 0){
+                            var responseData = common_stars;
+                            innerhtml += "<th colspan=\"7\" align=\"center\">Common Stars</th>"
+                            for(var i = 0; i < responseData.length; i++){
+                                innerhtml += "<tr>\
+                                                <td>" + responseData[i][0] + "</td>\
+                                                <td>"+ responseData[i][1] + "</td>\
+                                                <td>"+ responseData[i][2] + "</td>\
+                                                <td>"+ responseData[i][3] + "</td>\
+                                                <td>"+ responseData[i][4] + "</td>\
+                                                <td>"+ responseData[i][5] + "</td>\
+                                                <td>"+ responseData[i][6] + "</td>\
+                                                </tr>\
+                                                "
+                                
+                            }
+                        }
+                        if (common_directors.length > 0){
+                            var responseData = common_directors;
+                            innerhtml += "<th colspan=\"7\" align=\"center\">Common Directors</th>"
+                            for(var i = 0; i < responseData.length; i++){
+                                innerhtml += "<tr>\
+                                                <td>" + responseData[i][0] + "</td>\
+                                                <td>"+ responseData[i][1] + "</td>\
+                                                <td>"+ responseData[i][2] + "</td>\
+                                                <td>"+ responseData[i][3] + "</td>\
+                                                <td>"+ responseData[i][4] + "</td>\
+                                                <td>"+ responseData[i][5] + "</td>\
+                                                <td>"+ responseData[i][6] + "</td>\
+                                                </tr>\
+                                                "
+                                
+                            }
+                        }
+                        if (common_writers.length > 0){
+                            var responseData = common_writers;
+                            innerhtml += "<th colspan=\"7\" align=\"center\">Common Writers</th>"
+                            for(var i = 0; i < responseData.length; i++){
+                                innerhtml += "<tr>\
+                                                <td>" + responseData[i][0] + "</td>\
+                                                <td>"+ responseData[i][1] + "</td>\
+                                                <td>"+ responseData[i][2] + "</td>\
+                                                <td>"+ responseData[i][3] + "</td>\
+                                                <td>"+ responseData[i][4] + "</td>\
+                                                <td>"+ responseData[i][5] + "</td>\
+                                                <td>"+ responseData[i][6] + "</td>\
+                                                </tr>\
+                                                "
+                                
+                            }
+                        }
+                        innerhtml += "</table>"
+                    }
+                    
+                    testlabel.innerHTML = innerhtml
+                }
+            });
+            xhr.open("GET", url);
+            xhr.withCredentials = false
+            xhr.send();
+            if (xhr.status != 200){
+                testlabel.innerHTML = "Unable to fetch data! "
+            }
+            };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>homepage</title>
+
+  </head>
+  <body>
+    <form>
+        Field: 
+        <select id="field" onchange = "sel()">
+            <option value="star">star</option>
+            <option value="writer">writer</option>
+            <option value="director">director</option>
+            <option value="name">name</option>
+            <option value="genre">genre</option>
+        </select><div id="inputLabel"></div>
+        <button id="search", type = "button">Search</button>
+    </form>
+    <div id = "testlabel"></div>
+    <script>
+        var condlabel = document.getElementById("inputLabel");
+        condlabel.innerHTML = "<input type=\"text\" id=\"sname\"><br>";
+        var genreSelectedStatus = 0;
+        var btn = document.getElementById("search");
+        // change the textbox
+        function sel() {
+            var mySelect = document.getElementById("field");
+            var index = mySelect.selectedIndex;
+            var value = mySelect.options[index].value;
+            if (value == "genre") {
+                genreSelectedStatus = 1
+                var innerhtml = "<select id=\"sname\">\
+                                <option value=\"Action\">Action<\/option>\
+                                <option value=\"Drama\">Drama<\/option>\
+                                <option value=\"Historyr\">History</option>\
+                                <option value=\"Adventure\">Adventure</option>\
+                                <option value=\"Comedy\">Comedy</option>\
+                                <option value=\"War\">War</option>\
+                                <option value=\"Romance\">Romance</option>\
+                                <option value=\"Crime\">Crime</option>\
+                                <option value=\"Fantasy\">Fantasy</option>\
+                                <option value=\"Horror\">Horror</option>\
+                                <option value=\"Mystery\">Mystery</option>\
+                                <option value=\"Thriller\">Thriller</option>\
+                                <option value=\"Documentary\">Documentary</option>\
+                                <option value=\"Biography\">Biography</option>\
+                                <option value=\"Family\">Family</option>\
+                                <option value=\"Music\">Music</option>\
+                                <option value=\"Sci-Fi\">Sci-Fi</option>\
+                                <option value=\"Animation\">Animation</option>\
+                                <option value=\"Western\">Western</option>\
+                                <option value=\"Film-Noir\">Film-Noir</option>\
+                                <option value=\"Sport\">Sport</option>\
+                                <option value=\"Musical\">Musical</option>\
+                                <option value=\"News\">News</option>\
+                                </select>"
+            } else {
+                genreSelectedStatus = 0
+                var innerhtml = "<input type=\"text\" id=\"sname\"><br>"
+            }
+            document.getElementById("inputLabel").innerHTML = innerhtml;
+        }
+        // searching
+        searchURL = "http://127.0.0.1:5000/fetchdata?"
+        var btn = document.getElementById("search")
+        btn.onclick = function(){
+            var testlabel = document.getElementById("testlabel")
+            if (genreSelectedStatus == 1){
+                var mySelect = document.getElementById("sname");
+                var index = mySelect.selectedIndex;
+                var value = mySelect.options[index].value;
+                var url = searchURL + "genre=" + value
+            }
+            else{
+                var mySelect = document.getElementById("field");
+                var index = mySelect.selectedIndex;
+                var field = mySelect.options[index].value;
+                var inputbox = document.getElementById("sname");
+                var value = inputbox.value
+                var url = searchURL + field + "=" + value
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("readystatechange",function () {
+                if (this.readyState === 4) {
+                    responseData = JSON.parse(this.response);
+                    if (responseData.length == 0){
+                        var innerhtml = "No data"
+                    }
+                    else{
+                        var innerhtml = "<table>\
+                                            <tr>\
+                                            <th>Name</th>\
+                                            <th>Release year</th>\
+                                            <th>Duration</th>\
+                                            <th>Rating</th>\
+                                            <th>Rating count</th>\
+                                            <th>Genres</th>\
+                                            <th>Introduction</th>\
+                                            </tr>\
+                                            "
+                        for(var i = 0; i < responseData.length; i++){
+                            innerhtml += "<tr>\
+                                            <td>" + responseData[i][0] + "</td>\
+                                            <td>"+ responseData[i][1] + "</td>\
+                                            <td>"+ responseData[i][2] + "</td>\
+                                            <td>"+ responseData[i][3] + "</td>\
+                                            <td>"+ responseData[i][4] + "</td>\
+                                            <td>"+ responseData[i][5] + "</td>\
+                                            <td>"+ responseData[i][6] + "</td>\
+                                            </tr>\
+                                            "
+                        }
+                        innerhtml += "</table>"
+                    }
+                    
+                    testlabel.innerHTML = innerhtml
+                }
+            });
+            xhr.open("GET", url);
+            xhr.withCredentials = false
+            xhr.send();
+            if (xhr.status != 200){
+                testlabel.innerHTML = "Unable to fetch data! "
+            }
+            };
+    </script>
+  </body>
+</html>

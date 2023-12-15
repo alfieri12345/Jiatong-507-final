@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>homepage</title>
+
+  </head>
+  <body>
+    <div>Welcome</div>
+    Backend: <div id = "prompt"></div>
+    Your answer(input refresh to refresh): <input type="text" id="sname">
+    <button id="search", type = "button">Submit</button>
+    <div id = "testlabel"></div>
+    <script>
+        url = "http://127.0.0.1:5000/gettree?answer=refresh"
+        var promptlabel = document.getElementById("prompt")
+        var answerbox = document.getElementById("sname")
+        var xhr1 = new XMLHttpRequest();
+        xhr1.addEventListener("readystatechange",function () {
+            if (this.readyState === 4) {
+                responseData = JSON.parse(this.response);
+                var question = responseData.prompt
+                innerhtml = question
+                promptlabel.innerHTML = innerhtml
+            }
+        });
+        xhr1.open("GET", url);
+        xhr1.withCredentials = false
+        xhr1.send();
+        if (xhr1.status != 0){
+            console.log(xhr1.status)
+            promptlabel.innerHTML = "Unable to fetch data! "
+        };
+        var btn = document.getElementById("search");
+        btn.onclick = function(){
+            url = "http://127.0.0.1:5000/gettree?answer=" + answerbox.value
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("readystatechange",function () {
+                if (this.readyState === 4) {
+                    responseData = JSON.parse(this.response);
+                    question = responseData.prompt
+                    responsedata = responseData.data
+                    responseStatus = responseData.status
+                    responseState = responseData.state
+                    if (responseState == 1){
+                        if (responsedata.length == 0){
+                            innerhtml = "No data"
+                        }
+                        else{
+                        var innerhtml = "<table>\
+                                            <tr>\
+                                            <th>Name</th>\
+                                            <th>Release year</th>\
+                                            <th>Duration</th>\
+                                            <th>Rating</th>\
+                                            <th>Rating count</th>\
+                                            <th>Genres</th>\
+                                            <th>Introduction</th>\
+                                            </tr>\
+                                            "
+                        for(var i = 0; i < responsedata.length; i++){
+                            innerhtml += "<tr>\
+                                            <td>" + responsedata[i][0] + "</td>\
+                                            <td>"+ responsedata[i][1] + "</td>\
+                                            <td>"+ responsedata[i][2] + "</td>\
+                                            <td>"+ responsedata[i][3] + "</td>\
+                                            <td>"+ responsedata[i][4] + "</td>\
+                                            <td>"+ responsedata[i][5] + "</td>\
+                                            <td>"+ responsedata[i][6] + "</td>\
+                                            </tr>\
+                                            "
+                        }
+                        innerhtml += "</table>"
+                        testlabel.innerHTML = innerhtml
+                        promptlabel.innerHTML = question
+                    }
+                    }
+                    else{
+                        if (responseStatus == 1){
+                            var question = responseData.prompt
+                            innerhtml = question
+                            promptlabel.innerHTML = innerhtml
+                        }
+                    }
+                }
+            });
+            xhr.open("GET", url);
+            xhr.withCredentials = false
+            xhr.send();
+            if (xhr.status != 0){
+                console.log(xhr.status)
+                testlabel.innerHTML = "Unable to fetch data! "
+            }
+            };
+    </script>
+  </body>
+</html>
